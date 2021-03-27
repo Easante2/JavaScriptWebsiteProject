@@ -1,0 +1,329 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #17181a;
+  font-family: "Montserrat", sans-serif;
+  overflow-x: hidden;
+}
+
+#logo {
+  color: white;
+  font-family: "Abril Fatface";
+}
+
+.nav-header {
+  min-height: 10vh;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+  width: 80%;
+  margin: auto;
+  padding: 1rem 0rem;
+  /* push the navbar headers e.g. "days." forward, so that when we hover over, the circle colour 
+  animation appears behind the headers */
+  z-index: 2;
+  position: relative;
+}
+
+.line1,
+.line2 {
+  width: 3rem;
+  height: 0.2rem;
+  margin: 0.4rem;
+  background: white;
+  pointer-events: none;
+}
+
+.slide {
+  min-height: 100vh;
+  /* Evenly stretch out right and left margins using auto */
+  margin: 0 auto;
+  /* Use width to stretch out the slide container, so the contents are stretched evenly out in the container */
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  background-color: #17181a;
+}
+
+.hero-desc {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  flex-basis: 25rem;
+  padding-left: 5rem;
+  /* position is relative because we want to slide the text away and display the new
+  text description for the new section
+  we will have a black square div placed ontop using position absolute, for the hide and display effect */
+  position: relative;
+}
+
+.hero-img {
+  position: relative;
+  flex: 1;
+  flex-basis: 25rem;
+  /* image gets big when it scales up, so we want to use overflow hidden so it doesn't move out the image container  */
+  overflow: hidden;
+}
+
+.hero-img img {
+  width: 100%;
+  height: 100%;
+  /* object fit is added to make the image not look stretched  */
+  object-fit: cover;
+}
+
+.fashion-span {
+  color: rgb(255, 139, 93);
+}
+.mountain-span {
+  color: rgb(86, 124, 228);
+}
+.hike-span {
+  color: rgb(167, 110, 231);
+}
+
+.hero-desc h2 {
+  font-family: "Abril Fatface";
+  font-size: 4rem;
+}
+
+.hero-desc p {
+  padding: 3rem 0rem;
+  font-size: 1.2rem;
+  color: rgb(233, 233, 233);
+}
+
+.explore {
+  padding: 1rem;
+  background: none;
+  border: 1px solid white;
+  color: white;
+  font-size: 1rem;
+  text-decoration: none;
+  align-self: flex-start;
+  cursor: pointer;
+}
+
+.nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1;
+  opacity: 1;
+  /* Everything from the nav-bar page is masked/covered, and will only be visible through the 50px circle, using clip-path */
+  /* with circle(50px), only 50% of the circle is displaying the background & elements of nav-bar page */
+  /* 100% -10% positions the cirlce off frame. Can remove this to view the circle */
+  /* 100% will place it to end of the page on the right, -10% will place is off frame so you won't see the nav-bar page */
+  clip-path: circle(50px at 100% -10%);
+  /* webkit allows compatibility with other browsers */
+  -webkit-clip-path: circle(50px at 100% -10%);
+}
+
+.burger {
+  cursor: pointer;
+}
+
+.nav-links {
+  font-size: 3rem;
+  flex-basis: 30rem;
+}
+
+.nav-links h3 {
+  padding: 2rem 0rem;
+}
+
+.contact {
+  flex-basis: 30rem;
+}
+
+.contact h2 {
+  font-size: 3rem;
+  padding: 2rem 0rem;
+}
+
+.contact p {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+/* covers/hide the section image and text for the reveal effect when scrolling down to new section  */
+
+.reveal-img,
+.reveal-text {
+  position: absolute;
+  width: 100%;
+  height: 150%;
+  background: #17181a;
+  left: 0;
+  /*  cover the image even more with -15% */
+  top: -15%;
+  will-change: transform;
+}
+
+.cursor {
+  width: 3rem;
+  height: 3rem;
+  border: 2px solid white;
+  border-radius: 50%;
+  position: absolute;
+  /* move the cursor so that the pointer is in the middle of the circle cursor */
+  transform: translate(-50%, -50%);
+  /* when we use mouseover event, it focuses on the customised cursor, other elements are not clickable.
+   We remove this through pointer-events */
+  pointer-events: none;
+  transition: all 0.5s ease-in-out;
+  /* The transition-property property specifies the name of the CSS property the transition effect is for 
+  (the transition effect will start when the specified CSS property changes) 
+  -> We specify the transition to come into effect when the background and transform property changes on an element i.e. nav-active*/
+  transition-property: background, transform;
+  /* centre the customised cursor so that the mouse pointer is in the middle after the transform */
+  transform-origin: 75% 75%;
+}
+
+.active {
+  color: orange;
+}
+
+/* Pin spacer block can cover the explore button when we scroll, due to
+setPin() scroll effect added to the pageScene
+Here we can prevent the current slide from being covered by the next pin spacer block by making it static */
+.scrollmagic-pin-spacer {
+  position: static !important;
+}
+
+.cursor.nav-active {
+  background: rgb(86, 86, 236);
+  transform: scale(3);
+}
+
+.cursor.explore-active {
+  background: white;
+  transform: scale(3);
+}
+
+.cursor-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 0.5rem;
+  /* position the text so that it is in the centre of the circle cursor after transformation  */
+  transform: translate(-50%, -50%);
+}
+
+.title {
+  position: relative;
+  /* There is overflow with title-swipe css class selector, so overflow:hidden only covers the title. This means that only 
+  the title colour will change from the mix-blend-mode effect */
+  overflow: hidden;
+}
+
+.title-swipe {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+  /* since t-swipe1 is an additional class attribute, using mix-blend-mode will blend
+  all the text elements with the colour of t-swipe1, with the area title swipe covers   */
+  mix-blend-mode: darken;
+  /* moves the title swipe area box down by scale 100%, only the last line (fingertips) is covered by the title swipe area */
+  transform: translateY(100%);
+}
+
+.t-swipe1 {
+  background: rgb(86, 124, 228);
+}
+.t-swipe2 {
+  background: rgb(167, 110, 231);
+}
+.t-swipe3 {
+  background: rgb(255, 139, 93);
+}
+
+body.hide {
+  /* hide the scrolling when we are viewing the nav-bar page */
+  overflow: hidden;
+}
+
+/* Other Pages */
+.fashion1,
+.fashion2,
+.fashion3 {
+  min-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 70%;
+  margin: auto;
+  color: white;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.fashion-img {
+  height: 95vh;
+  flex-basis: 20rem;
+
+  /* To use this solution, erase object-fit on fashion-img img 
+  flex-flow: row nowrap;
+  align-items: center; */
+}
+
+.fashion-text {
+  flex: 1;
+  position: relative;
+  flex-basis: 25rem;
+}
+
+.fashion-img img {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.fashion-text h1 {
+  font-size: 5rem;
+  padding: 5rem 0rem;
+}
+
+.fashion1 h1 {
+  color: rgb(255, 139, 93);
+}
+.fashion2 h1 {
+  color: rgb(167, 110, 231);
+}
+.fashion3 h1 {
+  color: rgb(86, 124, 228);
+}
+
+.fashion-text p {
+  font-size: 1.3rem;
+  padding: 2rem 2rem 0rem 0rem;
+  margin-bottom: 10rem;
+}
+
+.fashion-nr {
+  font-size: 10rem;
+  position: absolute;
+  left: 50%;
+  bottom: 10%;
+  opacity: 0.2;
+}
