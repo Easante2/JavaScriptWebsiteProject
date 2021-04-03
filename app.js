@@ -1,6 +1,7 @@
 let controller;
 let slideScene;
 let pageScene;
+let detailScene;
 
 function animateSlides() {
   //Initialise Controller
@@ -165,6 +166,16 @@ function navToggle(e) {
 
 //Barba Page Transitions
 //Define objects with an array of objects inside the barba.init
+
+/* Issue:
+Page transitions work below however, with the barba transitions, we are only updating 
+the <main> content which means the hyperlinks in the navbar will not be updated in accordance to
+the directory path. When we transition to fahsion page, the href link for "days" logo will need to be updated
+to the correct path */
+//To fix this we will set the default directory location for the logo href
+//and update the logo href dynamically, when we enter the fashion page
+const logo = document.querySelector("#logo");
+
 barba.init({
   views: [
     //define the pages we want to transition in
@@ -176,6 +187,8 @@ barba.init({
       namespace: "home",
       beforeEnter() {
         animateSlides();
+        //default directory location for the logo href
+        logo.href = "./index.html";
       },
       //remove the functions we don't need just before we leave the home index page
       beforeLeave() {
@@ -186,6 +199,17 @@ barba.init({
     },
     {
       namespace: "fashion",
+      beforeEnter() {
+        detailAnimation();
+        //dynamically update the logo href when we transition to the fahsion page
+        logo.href = "../index.html";
+        gsap.fromTo(".nav-header", 1, { y: "100%" }, { y: "0%", ease: "power2.Out" });
+      },
+
+      beforeLeave() {
+        controller.destroy();
+        detailScene.destroy();
+      },
     },
   ],
   transitions: [
@@ -201,16 +225,59 @@ barba.init({
         //once the current container is faded out, we tell barba to fade in the next container through "this.async"
         //gsap has a property called onComplete, which we can use to run functionality once the animation is complete
         //we can pass in "done" (this.async) to onComplete to run this.async
-        tl.fromTo(current.container, 1, { opacity: 1 }, { opacity: 0, onComplete: done });
+        //tl.fromTo(current.container, 1, { opacity: 1 }, { opacity: 0, onComplete: done });
+        //this example below uses a swipte effect
+        tl.fromTo(current.container, 1, { opacity: 1 }, { opacity: 0 });
+        tl.fromTo(".swipe", 0.75, { x: "-100%" }, { x: "0%", onComplete: done }, "-=0.5");
       },
       enter({ current, next }) {
         let done = this.async();
         const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
-        tl.fromTo(next.container, 1, { opacity: 0 }, { opacity: 1, onComplete: done });
+        //tl.fromTo(next.container, 1, { opacity: 0 }, { opacity: 1, onComplete: done });
+        //above removed for swipe effect
+        tl.fromTo(
+          //stagger property grabs each swipe div and delays the transition of each swipe, onto the page
+          ".swipe",
+          1,
+          { x: "0%" },
+          //stagger will delay each swipe one by one by 0.25s. short delay in-between each swipe apperaing
+          { x: "100%", stagger: 0.25, onComplete: done }
+        );
+        tl.fromTo(next.container, 1, { opacity: 0 }, { opacity: 1 });
       },
     },
   ],
 });
+
+function detailAnimation() {
+  controllerDA = new ScrollMagic.Controller();
+  const slides = document.querySelectorAll(".detail-slide");
+  slides.forEach((slide, index, slides) => {
+    const slideTl = gsap.timeline({
+      defaults: {
+        duration: 1,
+      },
+    });
+
+    //Transition fade from one slide to another when we scroll down
+    let nextSlide = slides.length - 1 === index ? "end" : slides[index + 1];
+    const nextImg = nextSlide.querySelector("img");
+    slideTl.fromTo(slide, { opacity: 1 }, { opacity: 0 });
+    slideTl.fromTo(nextSlide, { opacity: 0 }, { opacity: 1 }, "-=1");
+    slideTl.fromTo(nextImg, { x: "50%" }, { x: "0%" });
+
+    //Scene
+    detailScene = new ScrollMagic.Scene({
+      triggerElement: slide,
+      duration: "100%",
+      triggerHook: 0,
+    })
+      .setPin(slide, { pushFollowers: false })
+      .setTween(slideTl)
+      .addIndicators({ colorStart: "green", colorTrigger: "yellow", name: "detailScene" })
+      .addTo(controllerDA);
+  });
+}
 
 //EventListeners
 burger.addEventListener("click", navToggle);
